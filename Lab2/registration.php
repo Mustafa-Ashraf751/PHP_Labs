@@ -1,9 +1,50 @@
 <?php
 session_start();
 
+require_once 'validator.php';
+
 // Set static CAPTCHA code
 $staticCaptcha = "ABC123";
 $_SESSION['captcha'] = $staticCaptcha;
+
+// Initialize errors array and formData to put the data in it
+$errors = [];
+$formData = [];
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $formData = $_POST;
+
+    $errors = validateForm($formData);
+
+
+    if (empty($errors)) {
+
+        $userData = [
+            "firstName" => $_POST['firstName'],
+            "lastName" => $_POST['lastName'],
+            "address" => $_POST['address'],
+            "country" => $_POST['country'],
+            "gender" => $_POST['gender'],
+            "department" => $_POST['department'],
+            "skills" => $_POST['skills'],
+            "username" => $_POST['username'],
+            "password" => $_POST['password']
+
+        ];
+
+        $jsonData = json_encode($userData);
+
+        $file = fopen("./customer.txt", "a");
+
+        fwrite($file, $jsonData . PHP_EOL);
+
+        fclose($file);
+        header('Location: done.php');
+        exit;
+    }
+}
 
 
 
@@ -32,36 +73,39 @@ $_SESSION['captcha'] = $staticCaptcha;
                 <p class="text-muted">Please fill in all the required fields</p>
             </div>
 
-            <form id="registrationForm" class="needs-validation" action="done.php" method="post" novalidate>
+            <form id="registrationForm" class="needs-validation" action="registration.php" method="post" novalidate>
                 <div class="section">
                     <h4 class="section-title"><i class="bi bi-person"></i> Personal Information</h4>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label for="firstName" class="form-label required-field">First Name</label>
                             <input type="text" class="form-control" id="firstName" name="firstName" required>
-                            <?php if (!empty($firstNameError)): ?>
-                                echo "<div class='invalid-feedback'>
-                                    Please provide your first name.
-                                </div>";
-                                }
+                            <?php if (isset($errors['firstName'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['firstName']; ?>
+                                </div>
                             <?php endif; ?>
 
                         </div>
                         <div class="col-md-6">
                             <label for="lastName" class="form-label required-field">Last Name</label>
                             <input type="text" class="form-control" id="lastName" name="lastName" required>
-                            <div class="invalid-feedback">
-                                Please provide your last name.
-                            </div>
+                            <?php if (isset($errors['lastName'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['lastName']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="address" class="form-label required-field">Address</label>
                         <textarea class="form-control" id="address" rows="3" name="address" required></textarea>
-                        <div class="invalid-feedback">
-                            Please provide your address.
-                        </div>
+                        <?php if (isset($errors['address'])): ?>
+                            <div class='error'>
+                                <?php echo $errors['address']; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="row g-3">
@@ -81,9 +125,11 @@ $_SESSION['captcha'] = $staticCaptcha;
                                 <option value="Brazil">Brazil</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <div class="invalid-feedback">
-                                Please select a country.
-                            </div>
+                            <?php if (isset($errors['country'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['country']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="col-md-6">
@@ -105,9 +151,11 @@ $_SESSION['captcha'] = $staticCaptcha;
                                 </label>
 
                             </div>
-                            <div class="invalid-feedback">
-                                Please select a gender.
-                            </div>
+                            <?php if (isset($errors['gender'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['gender']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -175,9 +223,11 @@ $_SESSION['captcha'] = $staticCaptcha;
                             <option value="Research">Research & Development</option>
                             <option value="Customer">Customer Support</option>
                         </select>
-                        <div class="invalid-feedback">
-                            Please select a department.
-                        </div>
+                        <?php if (isset($errors['department'])): ?>
+                            <div class='error'>
+                                <?php echo $errors['department']; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -190,16 +240,20 @@ $_SESSION['captcha'] = $staticCaptcha;
                                 <span class="input-group-text">@</span>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
-                            <div class="invalid-feedback">
-                                Please choose a username.
-                            </div>
+                            <?php if (isset($errors['username'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['username']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-6">
                             <label for="password" class="form-label required-field">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
-                            <div class="invalid-feedback">
-                                Please provide a password.
-                            </div>
+                            <?php if (isset($errors['password'])): ?>
+                                <div class='error'>
+                                    <?php echo $errors['password']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -215,9 +269,11 @@ $_SESSION['captcha'] = $staticCaptcha;
                     </div>
                     <div class="mb-2">
                         <input type="text" class="form-control" name="captchaInput" id="captchaInput" placeholder="Enter the code above" required>
-                        <div class="invalid-feedback">
-                            Please enter the verification code correctly.
-                        </div>
+                        <?php if (isset($errors['captchaInput'])): ?>
+                            <div class='error'>
+                                <?php echo $errors['captchaInput']; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 

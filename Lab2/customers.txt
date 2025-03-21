@@ -1,0 +1,11 @@
+=== Form Errors ===
+FirstName: First name is required please enter data
+LastName: last name is required please enter data
+Address: Address is required please enter data
+Country: County is required please enter data
+Gender: Gender is required please enter data
+Department: Department is required please enter data
+Username: User name is required please enter data
+Password: Password is required please enter data
+CaptchaInput: Captcha code  is required please enter data
+===================
