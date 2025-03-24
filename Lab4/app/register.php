@@ -1,8 +1,7 @@
 <?php
 
-require_once('../handlers/registerHandler.php');
-require_once('../includes/session.php');
-
+require_once '../handlers/registerHandler.php';
+require_once '../includes/session.php';
 
 startSession();
 
@@ -14,7 +13,6 @@ if (isLoggedIn()) {
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors =  handleRegister($_POST);
-    var_dump($errors['email']);
 }
 
 
